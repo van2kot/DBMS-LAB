@@ -1,0 +1,141 @@
+
+create database company;
+
+use company;
+
+ 
+
+create table Project(PNO varchar(10),
+
+PLOC varchar(10),
+
+PNAME varchar(25),
+
+primary key(PNO));
+create table DEPT(DEPTNO varchar(10),
+
+DNAME varchar(25),
+
+DLOC varchar(10),
+
+primary key(DEPTNO));
+
+ 
+
+create table EMPLOYEE(EMPNO varchar(10),
+
+ENAME varchar(30),
+
+MGR_NO varchar(10),
+
+HIREDAATE date,
+
+sal int,
+
+DEPTNO varchar(10),
+
+primary key(EMPNO),
+
+foreign key (DEPTNO) references DEPT(DEPTNO)
+ON DELETE CASCADE 
+on update cascade);
+
+ 
+
+create table ASSIGNED_TO(EMPNO varchar(10),
+PNO varchar(10),
+
+JOB_ROLE varchar(20),
+
+primary key(EMPNO, PNO),
+
+foreign key(EMPNO) references EMPLOYEE(EMPNO),
+
+foreign key(PNO) references PROJECT(PNO)
+ON DELETE CASCADE 
+on update cascade);
+
+ 
+
+create table INCENTIVES(EMPNO varchar(10),
+
+INCENTIVE_DATE date,
+
+INCENTIVE_AMOUNT int,
+
+primary key(EMPNO, INCENTIVE_DATE),
+
+foreign key(EMPNO) references EMPLOYEE(EMPNO)
+ON DELETE CASCADE 
+on update cascade);
+
+ 
+
+insert into Project values("123", "BANGALORE","Management");
+
+insert into Project values("456", "HYDRABAD","App_development");
+insert into Project values("056", "MYSORE","Web_development");
+
+insert into Project values("789", "SURAT","Pollution_Management");
+
+insert into Project values("329", "MANGALURU","Marine_study");
+
+ 
+
+insert into DEPT values('1', "Management", "BANGALORE");
+
+insert into DEPT values('2', "App_development", "HYDRABAD");
+
+insert into DEPT values('3', "Web_development", "mysore");
+
+insert into DEPT values('4', "Pollution_Management", "SURAT");
+
+insert into DEPT values('5', "Marine_study", "MANGALURU");
+
+ 
+
+insert into EMPLOYEE values("11A", "Mathew", "12B", "2000-01-15",100000,'1');
+
+insert into EMPLOYEE values("12B", "Mark", "23B", "2000-02-15",90000,'2');
+
+insert into EMPLOYEE values("13C", "Luke", "12B", "2000-03-15",110000,'3');
+
+insert into EMPLOYEE values("14D", "Jhon", "12B", "2000-04-15",80000,'4');
+
+insert into EMPLOYEE values("15E", "David", "12B", "2000-05-15",70000,'5');
+insert into ASSIGNED_TO values("11A", "123","Data_analyst");
+
+insert into ASSIGNED_TO values("12B", "456","App_Development");
+
+insert into ASSIGNED_TO values("13C", "056","Full_stack_developer");
+
+insert into ASSIGNED_TO values("14D", "789","Environmentalist");
+
+insert into ASSIGNED_TO values("15E", "329","Marine_Study");
+
+
+insert into INCENTIVES values("11A", "2022-06-15", 10000);
+
+insert into INCENTIVES values("12B", "2021-07-15", 9000);
+
+insert into INCENTIVES values("13C", "2021-08-15", 11000);
+
+
+
+select EMPNO from EMPLOYEE where EMPNO in
+
+(select EMPNO from ASSIGNED_TO where PNO in
+
+(select PNO from Project where PLOC = "BANGALORE" || PLOC = "HYDRABAD" || PLOC = "MYSORE"));
+
+
+select EMPNO from EMPLOYEE where EMPNO not in (select EMPNO from INCENTIVES);
+
+select distinct E.ENAME, D.DNAME, A.JOB_ROLE from EMPLOYEE E, DEPT D, ASSIGNED_TO A, INCENTIVES I where E.EMPNO in (select EMPNO from INCENTIVES
+where INCENTIVE_AMOUNT = (select max(INCENTIVE_AMOUNT)
+from INCENTIVES where INCENTIVE_DATE between "2021-01-01" and "2021-12-31")) and D.DEPTNO =  E.DEPTNO and A.EMPNO = E.EMPNO;
+
+
+
+
+
